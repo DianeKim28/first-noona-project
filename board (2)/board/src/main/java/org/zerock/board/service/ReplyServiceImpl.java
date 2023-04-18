@@ -2,6 +2,7 @@ package org.zerock.board.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import org.zerock.board.dto.ReplyDTO;
 import org.zerock.board.entity.Board;
 import org.zerock.board.entity.Reply;
@@ -49,5 +50,4 @@ public class ReplyServiceImpl implements ReplyService {
 
             replyRepository.deleteById(rno);
         }
-
 }

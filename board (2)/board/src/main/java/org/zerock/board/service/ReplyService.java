@@ -6,6 +6,8 @@ import org.zerock.board.entity.Reply;
 
 import java.util.List;
 
+import static org.zerock.board.entity.QBoard.board;
+
 public interface ReplyService {
 
     Long register(ReplyDTO replyDTO); //댓글의 등록
@@ -32,6 +34,7 @@ public interface ReplyService {
     }
     // Reply 객체를 ReplyDTO로 변환 Board  객체가 필요하지 않으므로 게시물 번호만
     default ReplyDTO entityToDTO(Reply reply){
+
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
@@ -39,6 +42,7 @@ public interface ReplyService {
                 .regDate(reply.getRegDate())
                 .modDate(reply.getModDate())
                 .build();
+
         return dto;
     }
 }
