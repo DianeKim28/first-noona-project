@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+<head>
+    <meta charset="UTF-8">
+    <title>Bootstrap Example</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+</head>
+<body>
+
+    <th:block th:fragment="content">
+
+        <h1 class="mt-4">Board Read Page</h1>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+        <div class="form-group">
+            <label >Bno</label>
+            <input type="text" class="form-control" name="bno" th:value="${dto.bno}" readonly >
+        </div>
+
+        <div class="form-group">
+            <label >Title</label>
+            <input type="text" class="form-control" name="title" th:value="${dto.title}" readonly >
+        </div>
+        <div class="form-group">
+            <label >Content</label>
+            <textarea class="form-control" rows="5" name="content" readonly>[[${dto.content}]]</textarea>
+        </div>
+        <div class="form-group">
+            <label >Writer</label>
+            <input type="text" class="form-control" name="writer" th:value="${dto.writerName}" readonly>
+        </div>
+        <div class="form-group">
+            <label >RegDate</label>
+            <input type="text" class="form-control" name="regDate" th:value="${#temporals.format(dto.regDate, 'yyyy/MM/dd HH:mm:ss')}" readonly>
+        </div>
+        <div class="form-group">
+            <label >ModDate</label>
+            <input type="text" class="form-control" name="modDate" th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd HH:mm:ss')}" readonly>
+        </div>
+
+        <a th:href="@{/board/modify(bno = ${dto.bno}, page=${requestDTO.page}, type=${requestDTO.type}, keyword =${requestDTO.keyword})}">
+            <button type="button" class="btn btn-primary">Modify</button>
+        </a>
+
+        <a th:href="@{/board/list(page=${requestDTO.page} , type=${requestDTO.type}, keyword =${requestDTO.keyword})}">
+            <button type="button" class="btn btn-info">List</button>
+        </a>
+
+<!--        목록으로 버튼-->>
+
+        <div>
+<!--            댓글 갯수 보여주는 부분 시작 -->
+            <div class="mt-4">
+                <h5><span class="badge badge-secondary replyCount"> Reply Count [[${dto.replyCount}]]</span></h5>
+            </div>
+<!--            댓글 갯수 보여주는 부분 끝-->
+<!--            댓글 리스트 출력할 곳 시작-->
+            <div class="list-group replyList">
+
+            </div>
+<!--            댓글 리스트 출력할 곳 끝 -->
+
+        </div>
+    </th:block>
+ </body>
+</th:block>
+
+
+        <!--JS-->
+        <script th:inline="javascript">
+
+            $(document).ready(function(){
+
+                //게시글 번호
+                var bno = [[${dto.bno}]];
+                // 댓글이 추가 될 영역
+                var listGroup = $(".replyList");
+
+                // 날짜 처리를 위한 함수
+                function formatTime(str){
+                    var date = new Date(str);
+
+                    return date.getFullYear() + '/' +
+                        (date.getMonth() + 1) + '/' +
+                         date.getDate() + ' ' +
+                         date.getHours() + ':' +
+                         date.getMinutes();
+                }
+                //특정한 게시글의 댓글을 처리하는 함수
+                function loadJSONData(){
+                    $.getJSON('/replies/board/'+bno, function (arr) {
+
+                        console.log(arr);
+
+                        var str ="";
+
+                        $('.replyCount').html(" Reply Count " + arr.length);
+
+                        $.each(arr, function (idx, reply){
+                            console.log(reply);
+                            str += ' <div class="card-body" data-rno="'+reply.
+                                rno+'"><b>'+reply.rno +'</b>';
+                            str +='  <h5 class="card-title">'+reply.text+'</h5>';
+                            str +='  <h6 class="card-subtitle mb-2 text-muted">'+reply.
+                                replayer+'</h6>';
+                            str +='  <p class="card-text">'+ formatTime(reply.regDate)
+                            +'</p>';
+                            str +='  </div>';
+                        })
+                        listGroup.html(str);
+                    })
+                }
+
+                $(".replyCount").click(function(){
+
+                    $.getJSON('/replies/board/'+bno, function(arr){
+
+                        console.log(arr);
+
+                    })//end getJSON()
+
+                })//end click()
+
+            });//ready()
+        </script>
+
+
+
